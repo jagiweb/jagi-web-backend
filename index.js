@@ -77,3 +77,8 @@ app.delete("/users/:id", async (req, res) => {
         console.error(err.message)
     }
 })
+
+
+// TODO : 
+// CREATE CRUD FOR PORTFOLIO
+// USE GRAPHQL FOR THE API JUST FOR TESTING AND LEARNING

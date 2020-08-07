@@ -5,3 +5,5 @@ CREATE TABLE user(
     username TEXT,
     password TEXT
 );
+
+-- CREATE TABLE FOR PORTFOLIO WITH COLUMNS
