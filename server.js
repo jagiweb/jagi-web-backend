@@ -1,3 +1,5 @@
+// FIRST TEST SETTING UP EXPRESS, NODE AND GRAPHQL
+
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
