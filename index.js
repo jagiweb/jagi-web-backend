@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const pool = require("./db")
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 app.use(cors());
 app.use(express.json());
@@ -18,11 +20,15 @@ app.post("/users", async(req, res) => {
     try {
         
         const {username, password} = req.body;
-        const newUser = await pool.query("INSERT INTO users (username, password) VALUES($1, $2) RETURNING *",
-        [username, password]
+        const newUser = bcrypt.hash(password, saltRounds, function(err, hash) {
+            pool.query("INSERT INTO users (username, password) VALUES($1, $2) RETURNING *",
+        [username, hash]
+        
         );
-
-        res.json(newUser.rows[0])
+        res.json(newUser)
+        });
+        
+        
     } catch (err) {
         console.log(err.message)
     }
@@ -81,4 +87,69 @@ app.delete("/users/:id", async (req, res) => {
 
 // TODO : 
 // CREATE CRUD FOR PORTFOLIO
+
+app.post("/portfolios", async(req, res) => {
+    try {
+        
+        const {name, description, img_url, video_url} = req.body;
+        const newPortfolio = await pool.query("INSERT INTO portfolios (name, description, img_url, video_url) VALUES($1, $2, $3, $4) RETURNING *",
+        [name, description, img_url, video_url]
+        );
+
+        res.json(newPortfolio.rows[0])
+    } catch (err) {
+        console.log(err.message)
+    }
+})
+
+// GET ALL PORTFOLIOS
+
+app.get("/porfolios", async(req, res) => {
+    try {
+        const allPortfolios = await pool.query("SELECT * FROM portfolios")
+        res.json(allPortfolios.rows);
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// GET ONE PORTFOLIO
+
+app.get("/porfolios/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        const portfolio = await pool.query("SELECT * FROM portfolios WHERE portfolio_id = $1", [id])
+        res.json(portfolio.rows[0])
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// UPDATE PORTFOLIO
+
+app.put("/porfolios/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {name, description, img_url, video_url} = req.body
+        const updatePortfolio = await pool.query("UPDATE portfolios SET name = $1, description = $2, img_url = $3, video_url = $4 WHERE portfolio_id = $5",
+        [name, description, img_url, video_url, id]
+        );
+        res.json("PORTFOLIO UPDATED")
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
+// DELETE PORTFOLIO
+
+app.delete("/porfolios/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletePortfolio = await pool.query("DELETE FROM portfolios WHERE portfolio_id = $1", [id])
+        res.json("PORTFOLIO DELETED")
+    } catch (err) {
+        console.error(err.message)
+    }
+})
+
 // USE GRAPHQL FOR THE API JUST FOR TESTING AND LEARNING
