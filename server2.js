@@ -53,6 +53,8 @@ const root = {
   courses: getCourses
 };
 
+// NEED TO CHANGE THE LINK OF THE LOCALHOST
+
 const app = express();
 app.use('/graphql', graphqlHTTP({
   schema: schema,
